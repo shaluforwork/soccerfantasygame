@@ -23,7 +23,7 @@ public class UserServiceTest extends SoccerFantasyApplicationTests {
 	@Test
 	public void testSignUp() {
 		UserRequestModel requestModel = new UserRequestModel();
-		requestModel.setEmail("shaluforwork@gmail.com");
+		requestModel.setEmail("shalu@gmail.com");
 		requestModel.setPassword("password");
 		UserResponseModel userResp =  userService.signUp(requestModel);		
 		assertThat(userResp.getEmail().equals("shaluforwork@gmail.com"));

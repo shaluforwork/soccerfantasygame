@@ -1,5 +1,7 @@
 package com.soccerfantasy.app.controller;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,7 @@ public class UserController {
 
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE },
     		produces = { MediaType.APPLICATION_JSON_VALUE })
-    public ResponseEntity<UserResponseModel> signUp(@RequestBody UserRequestModel userRequestModel) {
+    public ResponseEntity<UserResponseModel> signUp(@Valid @RequestBody UserRequestModel userRequestModel) {
     	logger.info("User Sign Up called with :: {}", userRequestModel.getEmail());
     	UserResponseModel userResponseModel = userService.signUp(userRequestModel);
     	return new ResponseEntity<UserResponseModel>(userResponseModel, HttpStatus.CREATED);
