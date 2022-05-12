@@ -17,7 +17,6 @@ public class TransferListRequestModel {
 	@NotNull(message="Player Id cannot be null")
 	private Long playerId;
 
-	@NotNull(message="Asking Price cannot be null")
 	private BigInteger askingPrice;
 
 }
