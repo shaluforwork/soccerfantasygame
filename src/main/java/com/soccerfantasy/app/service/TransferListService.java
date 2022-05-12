@@ -38,7 +38,11 @@ public class TransferListService {
 		if (optionalTransferList == null || optionalTransferList.isEmpty()) {
 			TransferListEntity transferListEntity = new TransferListEntity();
 			transferListEntity.setPlayer(playerEntity);
-			transferListEntity.setAskingPrice(playerEntity.getMarketValue());
+			if (transferListRequest.getAskingPrice() != null) {
+				transferListEntity.setAskingPrice(transferListRequest.getAskingPrice());
+			} else {
+				transferListEntity.setAskingPrice(playerEntity.getMarketValue());
+			}
 			transferListEntity.setTransferred(false);
 			transferListRepository.save(transferListEntity);
 		} else  {

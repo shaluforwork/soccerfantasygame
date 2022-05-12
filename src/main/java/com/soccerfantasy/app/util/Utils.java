@@ -2,6 +2,7 @@ package com.soccerfantasy.app.util;
 
 import java.security.SecureRandom;
 import java.sql.Date;
+import java.util.Calendar;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
@@ -52,7 +53,10 @@ public class Utils {
 		int randomDay = (int) (Math.random()*28);
 		int randomMonth = (int) (Math.random()*12);
 		int randomYear = 2004 - (int) (Math.random()*22);
-		return new Date(randomYear, randomMonth, randomDay);
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(randomYear, randomMonth, randomDay);
+		Date randomBirthDateDate = new Date(calendar.getTimeInMillis());
+		return randomBirthDateDate;
 	}
 
 	public static String getRandomCountry() {

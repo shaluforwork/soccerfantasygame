@@ -44,18 +44,17 @@ public class TransferService {
 		UserEntity userEntity = userService.findUserByUserId(userId);
 		TransferListEntity transferListEntity = transferListService.getTransferListById(transferRequest.getTransferListId());
 		TeamEntity toTeamEntity = teamService.findTeamEntityByTeamById(transferRequest.getToTeam());
-		TeamEntity fromTeamEntity = teamService.findTeamEntityByTeamById(transferRequest.getFromTeam());
-		PlayerEntity playerEntity = playerService.fetchPlayerEntity(transferRequest.getPlayerId());
+		PlayerEntity playerEntity = transferListEntity.getPlayer();
+		TeamEntity fromTeamEntity = playerEntity.getTeam();
+		BigInteger buyingPrice = transferListEntity.getAskingPrice();
 
 		/** Check that User is authorized and owns the team team buying the players **/
 		transferValidationService.validateBuyingTeamUser(userEntity, transferRequest);
 
 		/** Check that the Player is on Transfer List and does not belong to the same team **/
+		transferValidationService.validateNotSameTeam(fromTeamEntity, toTeamEntity);
 		/** Check that there is enough balance to buy the player **/
-		transferValidationService.validateBudget(playerEntity, toTeamEntity);
-
-
-		BigInteger buyingPrice = transferListEntity.getAskingPrice();
+		transferValidationService.validateBudget(buyingPrice, toTeamEntity);
 
 		/** make new entry in the transfer table **/
 		TransferEntity transfer = new TransferEntity();

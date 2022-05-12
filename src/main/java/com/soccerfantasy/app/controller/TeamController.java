@@ -1,5 +1,7 @@
 package com.soccerfantasy.app.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,6 +32,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/team")
 public class TeamController {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private TeamService teamService;
@@ -37,6 +40,7 @@ public class TeamController {
     @Operation(security = @SecurityRequirement(name = "jwtBearerToken"))
 	@GetMapping(path = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<TeamResponseModel> getTeam(@PathVariable Long id) {
+    	logger.info("Get Team API called for team id :: {}", id);
 		TeamResponseModel teamResponseModel = teamService.fetchTeamById(id);
 		return new ResponseEntity<TeamResponseModel>(teamResponseModel, HttpStatus.OK);
 	}
@@ -46,6 +50,7 @@ public class TeamController {
 			produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<TeamResponseModel> updateTeam(@PathVariable Long id,
 			@RequestBody TeamRequestModel teamRequestModel) {
+    	logger.info("Update Team API called for team id :: {}", id);
 		teamService.updateTeam(id, teamRequestModel);
 		return new ResponseEntity<TeamResponseModel>(HttpStatus.ACCEPTED);
 	}

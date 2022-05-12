@@ -32,8 +32,6 @@ public class TransferControllerTest extends SoccerFantasyApplicationTests {
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 		String userId = "";
 		TransferRequestModel transferRequest = new TransferRequestModel();
-		transferRequest.setPlayerId((long) 1);
-		transferRequest.setFromTeam((long) 1);
 		transferRequest.setToTeam((long) 2);
 		transferRequest.setTransferListId((long) 1);
 		when(transferService.buyPlayer(userId, transferRequest)).thenReturn(true);

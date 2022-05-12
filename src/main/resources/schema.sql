@@ -3,8 +3,8 @@ USE FANTASYSOCCER;
 
 CREATE TABLE IF NOT EXISTS USER (
 	ID int primary key auto_increment,
-	USER_ID varchar(200),
-	EMAIL varchar(200),
+	USER_ID varchar(200) UNIQUE,
+	EMAIL varchar(200) UNIQUE,
 	ENCRYPTED_PASSWORD varchar(200),
 	TEAM_ID integer
 );
