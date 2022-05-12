@@ -6,10 +6,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.soccerfantasy.app.model.request.PlayerRequestModel;
@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
- * APIs to fetch team details based on team Id and update team name and country.
+ * APIs to fetch player details based on player Id and update player first name, last name and country.
  * @author shalu
  *
  */
@@ -35,17 +35,17 @@ public class PlayerController {
 	private PlayerService playerService;
 
     @Operation(security = @SecurityRequirement(name = "jwtBearerToken"))
-	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Player> getTeam(@RequestParam Long playerId) {
-		Player player = playerService.fetchPlayer(playerId);
+	@GetMapping(path = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Player> getPlayer(@PathVariable Long id) {
+		Player player = playerService.fetchPlayer(id);
 		return new ResponseEntity<Player>(player, HttpStatus.OK);
 	}
 
     @Operation(security = @SecurityRequirement(name = "jwtBearerToken"))
-	@PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE },
+	@PutMapping(path = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE },
 			produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Player> updateTeam(@RequestParam Long teamId, @RequestBody PlayerRequestModel playerRequestModel) {
-    	playerService.updatePlayer(teamId, playerRequestModel);
+	public ResponseEntity<Player> updatePlayer(@PathVariable Long id, @RequestBody PlayerRequestModel playerRequestModel) {
+    	playerService.updatePlayer(id, playerRequestModel);
 		return new ResponseEntity<Player>(HttpStatus.ACCEPTED);
 	}
 }

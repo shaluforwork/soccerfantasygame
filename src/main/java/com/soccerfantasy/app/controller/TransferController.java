@@ -4,34 +4,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.soccerfantasy.app.model.request.UserRequestModel;
-import com.soccerfantasy.app.model.response.UserResponseModel;
-import com.soccerfantasy.app.service.UserService;
+import com.soccerfantasy.app.model.request.TransferRequestModel;
+import com.soccerfantasy.app.service.TransferService;
 
 @RestController
 @RequestMapping("/transfer")
 public class TransferController {
 
 	@Autowired
-	private UserService userService;
+	private TransferService transferService;
 
-    @GetMapping(consumes = { MediaType.APPLICATION_JSON_VALUE },
-    		produces = { MediaType.APPLICATION_JSON_VALUE })
-    public ResponseEntity<UserResponseModel> getTransferList(@RequestBody UserRequestModel userRequestModel) {
-    	UserResponseModel userResponseModel = userService.signUp(userRequestModel);
-    	return new ResponseEntity<UserResponseModel>(userResponseModel, HttpStatus.CREATED);
-    }
+	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE },
+			produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Boolean> buyPlayer(@RequestParam String userId,
+			@RequestBody TransferRequestModel transferRequest) {
+		boolean transferred = transferService.buyPlayer(userId, transferRequest);
+		return new ResponseEntity<Boolean>(transferred, HttpStatus.CREATED);
+	}
 
-	@PostMapping(path = "/login", consumes = { MediaType.APPLICATION_JSON_VALUE },
-    		produces = { MediaType.APPLICATION_JSON_VALUE })
-    public ResponseEntity<UserResponseModel> logIn(@RequestBody UserRequestModel userRequestModel) {
-    	UserResponseModel userResponseModel = userService.logIn(userRequestModel);
-    	return new ResponseEntity<UserResponseModel>(userResponseModel, HttpStatus.CREATED);
-    }
 }

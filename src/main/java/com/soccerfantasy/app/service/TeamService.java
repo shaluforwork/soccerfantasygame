@@ -30,11 +30,7 @@ public class TeamService {
 	private PlayerService playerService;
 
 	public TeamResponseModel fetchTeamById(Long teamId) {
-		Optional<TeamEntity> optionalTeamEntity = teamRepository.findById(teamId);
-		if (optionalTeamEntity == null || optionalTeamEntity.isEmpty()) {
-			throw new TeamServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-		}
-		TeamEntity teamEntity = optionalTeamEntity.get();
+		TeamEntity teamEntity = findTeamEntityByTeamById(teamId);
 		List<Player> players = playerService.fetchTeamPlayers(teamId);
 		TeamResponseModel teamResponseModel = teamMapper.teamEntityToTeamResponseModel(teamEntity);
 		teamResponseModel.setPlayers(players);
@@ -61,5 +57,17 @@ public class TeamService {
 		teamRepository.save(teamEntity);
 		playerService.initializePlayers(teamEntity);
 		return teamEntity;
+	}
+
+	public TeamEntity findTeamEntityByTeamById(Long teamId) {
+		Optional<TeamEntity> optionalTeamEntity = teamRepository.findById(teamId);
+		if (optionalTeamEntity == null || optionalTeamEntity.isEmpty()) {
+			throw new TeamServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+		}
+		return optionalTeamEntity.get();
+	}
+
+	public void saveUpdatedRecord(TeamEntity teamEntity) {
+		teamRepository.save(teamEntity);		
 	}
 }

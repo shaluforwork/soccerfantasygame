@@ -1,7 +1,5 @@
 package com.soccerfantasy.app.model.request;
 
-import java.math.BigInteger;
-
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -14,6 +12,9 @@ import lombok.Data;
 @Data
 public class TransferRequestModel {
 
+	@NotNull(message="Transfer List Id cannot be null")
+	private Long transferListId;
+
 	@NotNull(message="Player Id cannot be null")
 	private Long playerId;
 
@@ -22,6 +23,4 @@ public class TransferRequestModel {
 
 	@NotNull(message="To Team cannot be null")
 	private Long toTeam;
-
-	private BigInteger buyingPrice;
 }

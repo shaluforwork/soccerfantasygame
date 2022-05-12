@@ -14,7 +14,6 @@ import lombok.Data;
 public class TeamResponseModel {
 
 	private Integer teamId;
-	private Integer userId;
 	private String teamName;
 	private String country;
 	private BigInteger totalValue;

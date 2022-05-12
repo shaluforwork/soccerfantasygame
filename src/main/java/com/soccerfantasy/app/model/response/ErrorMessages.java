@@ -8,7 +8,8 @@ public enum ErrorMessages {
     NO_RECORD_FOUND("Record with provided id is not found"),
     AUTHENTICATION_FAILED("Authentication failed"),
     COULD_NOT_UPDATE_RECORD("Could not update record"),
-    COULD_NOT_DELETE_RECORD("Could not delete record");
+    TRANSFER_VALIDATION_FAILED("Transfer Validation failed"),
+    NOT_ENOUGH_FUNDS("Not enough funds to buy the player");
 	
     private String errorMessage;
 

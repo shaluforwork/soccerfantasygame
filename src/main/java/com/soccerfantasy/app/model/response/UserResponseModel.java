@@ -14,4 +14,6 @@ public class UserResponseModel {
 
 	private String email;
 
+	private String teamId;
+
 }

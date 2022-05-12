@@ -30,15 +30,15 @@ public class Utils {
     		"Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City",
     		"Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"};
 
-    public String generateUserId(int length) {
+    public static String generateUserId(int length) {
         return generateRandomString(length);
     }
     
-    public String generateAddressId(int length) {
+    public static String generateAddressId(int length) {
         return generateRandomString(length);
     }
     
-    private String generateRandomString(int length) {
+    private static String generateRandomString(int length) {
         StringBuilder returnValue = new StringBuilder(length);
 
         for (int i = 0; i < length; i++) {
@@ -47,36 +47,8 @@ public class Utils {
 
         return new String(returnValue);
     }
-	/*
-	 * public static boolean hasTokenExpired(String token) { boolean returnValue =
-	 * false;
-	 * 
-	 * try { Claims claims =
-	 * Jwts.parser().setSigningKey(SecurityConstants.getTokenSecret()).
-	 * parseClaimsJws(token) .getBody();
-	 * 
-	 * Date tokenExpirationDate = claims.getExpiration(); Date todayDate = new
-	 * Date();
-	 * 
-	 * returnValue = tokenExpirationDate.before(todayDate); } catch
-	 * (ExpiredJwtException ex) { returnValue = true; }
-	 * 
-	 * return returnValue; }
-	 * 
-	 * public String generateEmailVerificationToken(String userId) { String token =
-	 * Jwts.builder() .setSubject(userId) .setExpiration(new
-	 * Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
-	 * .signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
-	 * .compact(); return token; }
-	 * 
-	 * public String generatePasswordResetToken(String userId) { String token =
-	 * Jwts.builder() .setSubject(userId) .setExpiration(new
-	 * Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
-	 * .signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
-	 * .compact(); return token; }
-	 */
 
-	public static Date getRandomDateOfBirth() {
+    public static Date getRandomDateOfBirth() {
 		int randomDay = (int) (Math.random()*28);
 		int randomMonth = (int) (Math.random()*12);
 		int randomYear = 2004 - (int) (Math.random()*22);

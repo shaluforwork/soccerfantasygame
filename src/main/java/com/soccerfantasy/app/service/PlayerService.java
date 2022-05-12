@@ -1,5 +1,6 @@
 package com.soccerfantasy.app.service;
 
+import static com.soccerfantasy.app.util.AppConstants.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,22 +57,22 @@ public class PlayerService {
 		return playerEntity;
 	}
 
-	@Transactional(propagation = Propagation.NESTED)
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void initializePlayers(TeamEntity teamEntity) {
 		List<PlayerEntity> playerEntities = new ArrayList<>();
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < NUM_ATTACKER; i++) {
 			PlayerEntity playerEntity = new PlayerBuilder(PlayerType.ATTACKER, teamEntity).build();
 			playerEntities.add(playerEntity);
 		}
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < NUM_MIDFIELDER; i++) {
 			PlayerEntity playerEntity = new PlayerBuilder(PlayerType.MIDFIELDER, teamEntity).build();
 			playerEntities.add(playerEntity);
 		}
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < NUM_DEFENDER; i++) {
 			PlayerEntity playerEntity = new PlayerBuilder(PlayerType.DEFENDER, teamEntity).build();
 			playerEntities.add(playerEntity);
 		}
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < NUM_GOALKEEPER; i++) {
 			PlayerEntity playerEntity = new PlayerBuilder(PlayerType.GOALKEEPER, teamEntity).build();
 			playerEntities.add(playerEntity);
 		}
@@ -91,5 +92,9 @@ public class PlayerService {
 			playerEntity.setCountry(playerRequestModel.getCountry());
 		}
 		playerRepository.saveAndFlush(playerEntity);
+	}
+
+	public void saveUpdatedRecord(PlayerEntity playerEntity) {
+		playerRepository.saveAndFlush(playerEntity);	
 	}
 }

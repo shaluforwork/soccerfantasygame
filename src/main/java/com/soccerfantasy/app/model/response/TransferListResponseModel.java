@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class TransferListResponseModel {
 
-	private Long transferId;
+	private Long transferListId;
 	private Player player;
 	private BigInteger askingPrice;
 	private Boolean transferred;

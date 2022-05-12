@@ -1,90 +1,90 @@
 package com.soccerfantasy.app.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.math.BigInteger;
+import java.sql.Timestamp;
 
 import javax.transaction.Transactional;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.soccerfantasy.app.domain.PlayerEntity;
+import com.soccerfantasy.app.domain.TeamEntity;
+import com.soccerfantasy.app.domain.TransferEntity;
 import com.soccerfantasy.app.domain.TransferListEntity;
-import com.soccerfantasy.app.exception.TransferServiceException;
-import com.soccerfantasy.app.mapping.TransferListMapper;
-import com.soccerfantasy.app.model.response.ErrorMessages;
-import com.soccerfantasy.app.model.response.TeamResponseModel;
-import com.soccerfantasy.app.model.response.TransferListResponseModel;
-import com.soccerfantasy.app.repository.TransferListRepository;
+import com.soccerfantasy.app.domain.UserEntity;
+import com.soccerfantasy.app.model.request.TransferRequestModel;
 import com.soccerfantasy.app.repository.TransferRepository;
 
 @Service
 public class TransferService {
 
 	@Autowired
-	private TransferListRepository transferListRepository;
-
-	@Autowired
 	private TransferRepository transferRepository;
 
 	@Autowired
-	private TransferListMapper transferListMapper;
+	private PlayerTransferValidationService transferValidationService;
 
 	@Autowired
 	private PlayerService playerService;
 
 	@Autowired
-	private PlayerTransferValidationService transferValidationService;
+	private UserService userService;
+
+	@Autowired
+	private TeamService teamService;
+
+	@Autowired
+	private TransferListService transferListService;
 
 	@Transactional
-	public Boolean addOnTransferList(Long playerId) {
-		boolean added = false;
-		PlayerEntity playerEntity = playerService.fetchPlayerEntity(playerId);
-		Optional<TransferListEntity> optionalTransferList = transferListRepository.findByPlayer_IdAndTransferred(playerId, false);
-		if (optionalTransferList == null || optionalTransferList.isEmpty()) {
-			TransferListEntity transferListEntity = new TransferListEntity();
-			transferListEntity.setPlayer(playerEntity);
-			transferListEntity.setAskingPrice(playerEntity.getMarketValue());
-			transferListEntity.setTransferred(false);
-			transferListRepository.save(transferListEntity);
-		} else  {
-			throw new TransferServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
-		}
-		return added;
-	}
+	public Boolean buyPlayer(String userId, TransferRequestModel transferRequest) {
+		UserEntity userEntity = userService.findUserByUserId(userId);
+		TransferListEntity transferListEntity = transferListService.getTransferListById(transferRequest.getTransferListId());
+		TeamEntity toTeamEntity = teamService.findTeamEntityByTeamById(transferRequest.getToTeam());
+		TeamEntity fromTeamEntity = teamService.findTeamEntityByTeamById(transferRequest.getFromTeam());
+		PlayerEntity playerEntity = playerService.fetchPlayerEntity(transferRequest.getPlayerId());
 
-	public List<TransferListResponseModel> fetchPendingTransferList() {
-		List<TransferListResponseModel> pendingTransfers = new ArrayList<TransferListResponseModel>();
-		List<TransferListEntity> transferList = transferListRepository.findAllByTransferred(false);
-		if (transferList == null || transferList.isEmpty()) {
-			throw new TransferServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());			
-		} else {
-			for (TransferListEntity transferListEntity : transferList) {
-				TransferListResponseModel pendingTransfer = transferListMapper.transferListEntityToTransferListResponseModel(transferListEntity);
-				pendingTransfers.add(pendingTransfer);
-			}
-		}
-		return pendingTransfers;
-	}
+		/** Check that User is authorized and owns the team team buying the players **/
+		transferValidationService.validateBuyingTeamUser(userEntity, transferRequest);
 
-	@Transactional
-	public Boolean buyPlayer(String userId, Long toTeamId, Long transferListId) {
-		boolean transferred = false;
-		TeamService teamService = new TeamService();
-		TeamResponseModel teamEntity = teamService.fetchTeamById(toTeamId);
-		UserService userService = new UserService();
-		userService.loadUserByUsername(userId);
-		//user is authorized and owns the team
-		//player is on transferlist and not on the same team
-		//there is enough balance to buy the player
-		
-		//make new entry in the transfer table
-		//reduce toTeam budget and increment total value
-		//increase fromTeam budget and decrease total value
-		//update player has been transferred, update player's team and new market price}
-		//performTransfer(toTeam, fromTeam, playerEntity, TransferEntity, transferList
-		return transferred;
-	}
+		/** Check that the Player is on Transfer List and does not belong to the same team **/
+		/** Check that there is enough balance to buy the player **/
+		transferValidationService.validateBudget(playerEntity, toTeamEntity);
 
+
+		BigInteger buyingPrice = transferListEntity.getAskingPrice();
+
+		/** make new entry in the transfer table **/
+		TransferEntity transfer = new TransferEntity();
+		transfer.setPlayer(playerEntity);
+		transfer.setFromTeam(fromTeamEntity);
+		transfer.setToTeam(toTeamEntity);
+		transfer.setBuyingPrice(buyingPrice);
+		transfer.setDateTime(new Timestamp(DateTime.now(DateTimeZone.UTC).getMillis()));
+
+		Double newMarketValue = playerEntity.getMarketValue().doubleValue() * ((double) 1.1 + (Math.random() * (double) 0.9));
+		BigInteger updatedMarketValue = new BigInteger(newMarketValue.toString().substring(0, newMarketValue.toString().indexOf(".")));
+
+		/** update player has been transferred, update player's team and new market price **/
+		playerEntity.setTeam(toTeamEntity);
+		playerEntity.setMarketValue(updatedMarketValue);
+
+		/** increase fromTeam budget and decrease total value **/
+		fromTeamEntity.setBudget(toTeamEntity.getBudget().add(buyingPrice));
+		fromTeamEntity.setTotalValue(toTeamEntity.getTotalValue().subtract(buyingPrice));
+
+		/** reduce toTeam budget and increment total value **/
+		toTeamEntity.setBudget(toTeamEntity.getBudget().subtract(buyingPrice));
+		toTeamEntity.setTotalValue(toTeamEntity.getTotalValue().add(updatedMarketValue));
+		transferListEntity.setTransferred(true);
+
+		transferRepository.save(transfer);
+		teamService.saveUpdatedRecord(toTeamEntity);
+		teamService.saveUpdatedRecord(toTeamEntity);
+		playerService.saveUpdatedRecord(playerEntity);
+		return true;
+	}
 }
